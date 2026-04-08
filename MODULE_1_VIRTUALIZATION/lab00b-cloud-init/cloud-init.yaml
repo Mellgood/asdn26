@@ -1,0 +1,20 @@
+#cloud-config
+
+# 1. Modify the default user
+users:
+  - default
+  - name: ubuntu
+    groups: [docker]
+    # Adding the ubuntu user to the docker group allows running containers without sudo.
+    # Note: The group will be created by the Docker installer script below.
+
+# 2. Run shell commands on first boot
+runcmd:
+  # TODO: Use curl to download the official docker installation script
+  # Hint: command is 'curl -fsSL https://get.docker.com -o get-docker.sh'
+  
+  # TODO: Execute the script
+  # Hint: command is 'sh get-docker.sh'
+  
+  # (Optional) Log completion
+  - echo "Docker automated installation completed!"
