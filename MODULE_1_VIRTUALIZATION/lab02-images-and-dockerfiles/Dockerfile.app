@@ -1,32 +1,24 @@
-# Dockerfile for the ASDN Web Application
-# ==========================================
-# Complete this Dockerfile to containerize the Python Flask app.
-#
-# Requirements:
-#   1. Use python:3.11-slim as the base image
-#   2. Set the working directory to /app
-#   3. Copy the requirements file and install dependencies
-#   4. Copy the application code
-#   5. Expose port 5000
-#   6. Set the default command to run the app
+# Dockerfile for the ASDN Web Application — SOLUTION
+# ====================================================
 
-# TODO: Specify the base image
-# FROM ...
+# Use Python 3.11 slim as the base image
+FROM python:3.11-slim
 
-# TODO: Set the working directory
-# WORKDIR ...
+# Set the working directory
+WORKDIR /app
 
-# TODO: Copy requirements.txt into the container and install dependencies
-# (Hint: copy requirements first, then install, then copy the rest of the code.
-#  This way, dependencies are cached and not reinstalled on every code change.)
-# COPY ...
-# RUN ...
+# Copy requirements first to leverage Docker layer caching
+# If requirements don't change, this layer is cached even when code changes
+COPY app/requirements.txt .
 
-# TODO: Copy the application code
-# COPY ...
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-# TODO: Expose the application port
-# EXPOSE ...
+# Copy the application code
+COPY app/app.py .
 
-# TODO: Set the default command to run the application
-# CMD ...
+# Expose the application port (documentation)
+EXPOSE 5000
+
+# Run the application
+CMD ["python", "app.py"]

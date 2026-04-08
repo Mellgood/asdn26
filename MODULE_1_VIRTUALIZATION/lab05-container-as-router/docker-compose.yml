@@ -1,39 +1,46 @@
 services:
   host-a:
-    # TODO: Use your local 'net-tools' image
+    image: net-tools
     container_name: asdn-host-a
-    # TODO: Add capability NET_ADMIN (needed to manipulate the routing table)
     cap_add:
       - NET_ADMIN
-    # TODO: Attach to net-alpha with IP 10.5.1.10
-    
-    # We override the default command so the container stays alive, 
-    # but you'll modify this in Task 5 to also inject routes.
-    command: tail -f /dev/null
+    networks:
+      net-alpha:
+        ipv4_address: 10.5.1.10
+    command: bash -c "ip route add 10.5.2.0/24 via 10.5.1.1 && tail -f /dev/null"
 
   host-b:
-    # TODO: Use your local 'net-tools' image
+    image: net-tools
     container_name: asdn-host-b
     cap_add:
       - NET_ADMIN
-    # TODO: Attach to net-beta with IP 10.5.2.10
-    
-    command: tail -f /dev/null
+    networks:
+      net-beta:
+        ipv4_address: 10.5.2.10
+    command: bash -c "ip route add 10.5.1.0/24 via 10.5.2.1 && tail -f /dev/null"
 
   router:
-    # TODO: Use your local 'net-tools' image
+    image: net-tools
     container_name: asdn-router
     cap_add:
       - NET_ADMIN
-    # TODO: Attach to BOTH net-alpha (10.5.1.1) and net-beta (10.5.2.1)
-    
-    # TODO: In Task 5, uncomment the lines below to mount and run the init script
-    # volumes:
-    #   - ./router-init.sh:/router-init.sh:ro
-    # command: bash -c "/router-init.sh && tail -f /dev/null"
-    command: tail -f /dev/null
+    networks:
+      net-alpha:
+        ipv4_address: 10.5.1.1
+      net-beta:
+        ipv4_address: 10.5.2.1
+    volumes:
+      - ./router-init.sh:/router-init.sh:ro
+    command: bash -c "/router-init.sh && tail -f /dev/null"
 
 networks:
-  # TODO: Define net-alpha with subnet 10.5.1.0/24
-  
-  # TODO: Define net-beta with subnet 10.5.2.0/24
+  net-alpha:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.5.1.0/24
+  net-beta:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.5.2.0/24

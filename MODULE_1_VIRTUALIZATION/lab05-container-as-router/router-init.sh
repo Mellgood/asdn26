@@ -3,7 +3,7 @@
 
 echo "Initializing Router..."
 
-# TODO: Add the command to enable IP forwarding in the kernel.
-# ...
+# Enable IP forwarding
+sysctl -w net.ipv4.ip_forward=1
 
 echo "IP forwarding enabled."

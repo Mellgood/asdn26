@@ -1,6 +1,9 @@
 #!/bin/bash
-# Router Initialization
 echo "Starting Router"
 
-# TODO: IP Forwarding
-# TODO: Default route to Firewall (172.20.1.253)
+# IP Forwarding
+sysctl -w net.ipv4.ip_forward=1
+
+# Default route to Firewall (172.20.1.253)
+ip route del default
+ip route add default via 172.20.1.253

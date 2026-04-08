@@ -1,24 +1,80 @@
 services:
   client-1:
-    # TODO: Fill in based on topology
-    
+    image: net-tools
+    container_name: asdn-client-1
+    cap_add:
+      - NET_ADMIN
+    networks:
+      internal-net:
+        ipv4_address: 172.20.2.101
+    command: bash -c "ip route del default && ip route add default via 172.20.2.254 && tail -f /dev/null"
+
   client-2:
-    # TODO: Fill in based on topology
+    image: net-tools
+    container_name: asdn-client-2
+    cap_add:
+      - NET_ADMIN
+    networks:
+      internal-net:
+        ipv4_address: 172.20.2.102
+    command: bash -c "ip route del default && ip route add default via 172.20.2.254 && tail -f /dev/null"
     
   dns-srv:
-    # TODO: Fill in based on topology
-    
+    image: net-tools
+    container_name: asdn-dns-srv
+    cap_add:
+      - NET_ADMIN
+    networks:
+      internal-net:
+        ipv4_address: 172.20.2.10
+    command: bash -c "ip route del default && ip route add default via 172.20.2.254 && tail -f /dev/null"
+
   web-srv:
-    # TODO: Fill in based on topology
+    image: nginx:alpine
+    container_name: asdn-web-srv
+    cap_add:
+      - NET_ADMIN
+    networks:
+      dmz-net:
+        ipv4_address: 172.20.1.10
+    command: /bin/sh -c "ip route del default && ip route add default via 172.20.1.253 && ip route add 172.20.2.0/24 via 172.20.1.254 && nginx -g 'daemon off;'"
 
   router:
-    # TODO: Fill in based on topology
-    # Mount router-init.sh here
+    image: net-tools
+    container_name: asdn-router
+    cap_add:
+      - NET_ADMIN
+    networks:
+      dmz-net:
+        ipv4_address: 172.20.1.254
+      internal-net:
+        ipv4_address: 172.20.2.254
+    volumes:
+      - ./router-init.sh:/router-init.sh:ro
+    command: bash -c "/router-init.sh && tail -f /dev/null"
 
   firewall:
-    # TODO: Fill in based on topology
-    # Mount firewall-init.sh here
-
+    image: net-tools
+    container_name: asdn-firewall
+    cap_add:
+      - NET_ADMIN
+    networks:
+      default: 
+      dmz-net:
+        ipv4_address: 172.20.1.253
+    volumes:
+      - ./firewall-init.sh:/firewall-init.sh:ro
+    command: bash -c "/firewall-init.sh && tail -f /dev/null"
 
 networks:
-  # TODO: Define dmz-net and internal-net
+  dmz-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.1.0/24
+  internal-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.2.0/24
+  default:
