@@ -1,0 +1,27 @@
+# ASDN Lab 04: Docker Compose
+# ===========================
+
+# TODO: Define the version (optional in modern Compose, but good practice. Leave as is, or remove)
+
+services:
+  webapp:
+    # TODO: Use the 'nginx:alpine' image
+    # TODO: Set container_name to 'asdn-frontend'
+    # TODO: Map host port 8080 to container port 80
+    # TODO: Connect this service to BOTH frontend-net and backend-net
+    # TODO: Mount the local ./frontend folder to /usr/share/nginx/html (read-only)
+    
+  database:
+    # TODO: Use the 'postgres:15-alpine' image
+    # TODO: Set container_name to 'asdn-db'
+    # TODO: Set the environment variable POSTGRES_PASSWORD=secret
+    # TODO: Connect this service ONLY to backend-net
+    # TODO: Assign the static IP address 172.30.2.10
+    # TODO: Mount the local ./init.sql file to /docker-entrypoint-initdb.d/init.sql (read-only)
+    
+# TODO: Define the custom networks
+networks:
+  # frontend-net:
+  #   ...
+  # backend-net:
+  #   ...

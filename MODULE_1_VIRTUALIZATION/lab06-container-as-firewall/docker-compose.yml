@@ -1,0 +1,51 @@
+services:
+  client-pc:
+    # Use net-tools image
+    image: net-tools
+    container_name: asdn-client-pc
+    cap_add:
+      - NET_ADMIN
+    networks:
+      internal-net:
+        ipv4_address: 172.40.2.10
+    command: tail -f /dev/null
+
+  web-server:
+    image: nginx:alpine
+    container_name: asdn-web-server
+    cap_add:
+      - NET_ADMIN
+    networks:
+      dmz-net:
+        ipv4_address: 172.40.1.10
+    # Nginx starts automatically, but we need to change its default route if we bounce it.
+    # We will do it via docker exec in the lab, or you can supply a custom entrypoint here.
+        
+  firewall:
+    image: net-tools
+    container_name: asdn-firewall
+    cap_add:
+      - NET_ADMIN
+    networks:
+      default: # Represents the external internet/host network
+      dmz-net:
+        ipv4_address: 172.40.1.254
+      internal-net:
+        ipv4_address: 172.40.2.254
+    # TODO: mount the firewall-init.sh script and run it
+    command: tail -f /dev/null
+
+
+networks:
+  dmz-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.40.1.0/24
+  internal-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.40.2.0/24
+  default:
+    # Use standard compose default network as "public"

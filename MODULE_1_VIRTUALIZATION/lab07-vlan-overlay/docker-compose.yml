@@ -1,0 +1,21 @@
+services:
+  host-a:
+    # TODO: Use your net-tools image
+    container_name: asdn-host-a
+    # TODO: Add NET_ADMIN capabilities
+    
+    # TODO: Attach to shared-net with IP 172.50.0.10
+    
+    command: tail -f /dev/null
+
+  host-b:
+    # TODO: Use your net-tools image
+    container_name: asdn-host-b
+    # TODO: Add NET_ADMIN capabilities
+    
+    # TODO: Attach to shared-net with IP 172.50.0.20
+    
+    command: tail -f /dev/null
+
+networks:
+  # TODO: Define the shared-net network (172.50.0.0/24)

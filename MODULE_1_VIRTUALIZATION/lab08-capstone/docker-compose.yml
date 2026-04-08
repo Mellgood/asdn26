@@ -1,0 +1,24 @@
+services:
+  client-1:
+    # TODO: Fill in based on topology
+    
+  client-2:
+    # TODO: Fill in based on topology
+    
+  dns-srv:
+    # TODO: Fill in based on topology
+    
+  web-srv:
+    # TODO: Fill in based on topology
+
+  router:
+    # TODO: Fill in based on topology
+    # Mount router-init.sh here
+
+  firewall:
+    # TODO: Fill in based on topology
+    # Mount firewall-init.sh here
+
+
+networks:
+  # TODO: Define dmz-net and internal-net
