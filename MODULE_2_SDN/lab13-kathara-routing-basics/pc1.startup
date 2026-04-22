@@ -1,0 +1,7 @@
+# PC 1 Boot Script
+
+# TODO: Assign 10.0.0.2/24 to eth0 (Recall: ip addr add ... dev ...)
+# ...
+
+# TODO: Push a default route (0.0.0.0/0 or 'default') pointing towards r1's IP 10.0.0.1
+# ...

@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  opendaylight:
+    image: opendaylight/odl:latest
+    container_name: asdn_odl_lab12
+    ports:
+      - "8181:8181"   # RESTCONF API
+      - "6653:6653"   # OpenFlow
+      - "8101:8101"   # SSH Karaf Console
+    networks:
+      - sdn_net
+
+  mininet:
+    build:
+      context: ../docker
+      dockerfile: Dockerfile.sdn
+    container_name: asdn_mininet_lab12
+    privileged: true
+    stdin_open: true
+    tty: true
+    volumes:
+      - .:/lab
+      - /lib/modules:/lib/modules:ro
+    networks:
+      - sdn_net
+
+networks:
+  sdn_net:

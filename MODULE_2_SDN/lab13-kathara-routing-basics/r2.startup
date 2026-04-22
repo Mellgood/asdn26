@@ -1,0 +1,10 @@
+# Router 2 Boot Script
+
+# TODO: Assign 10.0.1.2/24 to eth0
+# ...
+
+# TODO: Assign 10.0.2.1/24 to eth1
+# ...
+
+# TODO: Add a static route for the 10.0.0.0/24 Subnet pointing via r1 (10.0.1.1)
+# ...

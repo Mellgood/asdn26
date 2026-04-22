@@ -22,3 +22,6 @@ venv/
 # Temporary files
 *.tmp
 *.log
+
+# Course
+**/solutions/

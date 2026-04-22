@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  onos:
+    image: onosproject/onos:2.7.0
+    container_name: asdn_onos_lab10
+    ports:
+      - "8181:8181"   # GUI / REST
+      - "6653:6653"   # OpenFlow
+      - "8101:8101"   # SSH Karaf
+    networks:
+      - sdn_net
+
+  mininet:
+    build:
+      context: ../docker
+      dockerfile: Dockerfile.sdn
+    container_name: asdn_mininet_lab10
+    privileged: true
+    stdin_open: true
+    tty: true
+    volumes:
+      - .:/lab
+      - /lib/modules:/lib/modules:ro
+    networks:
+      - sdn_net
+
+networks:
+  sdn_net:

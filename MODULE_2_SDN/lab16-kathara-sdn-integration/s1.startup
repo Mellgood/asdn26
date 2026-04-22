@@ -1,0 +1,14 @@
+# SDN Switch 1 Boot Script
+
+# Example provided: Starts the Open vSwitch background daemon (Required once per boot in Kathará)
+/etc/init.d/openvswitch-switch start
+
+# TODO: Create the OVS bridge named 's1' (Recall Lab 03: ovs-vsctl add-br ...)
+# ...
+
+# TODO: Add both of the physical Kathará interfaces 'eth0' and 'eth1' to the 's1' switch
+# ...
+
+# Example provided to point the switch externally towards your Ryu controller!
+# TODO: Replace <CONTROLLER_IP> with the IP address where Ryu is running
+ovs-vsctl set-controller s1 tcp:<CONTROLLER_IP>:6653
