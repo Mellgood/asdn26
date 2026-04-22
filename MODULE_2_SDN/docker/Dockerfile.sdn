@@ -1,0 +1,33 @@
+FROM ubuntu:20.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install dependencies and networking tools
+RUN apt-get update && apt-get install -y \
+    mininet \
+    openvswitch-switch \
+    openvswitch-common \
+    iputils-ping \
+    net-tools \
+    iproute2 \
+    tcpdump \
+    tshark \
+    iperf \
+    python3 \
+    python3-pip \
+    curl \
+    nano \
+    vim \
+    && rm -rf /var/lib/apt/lists/*
+
+# Fix for Ryu compatibility with newer eventlet packages
+RUN pip3 install --upgrade pip
+RUN pip3 install mininet networkx
+RUN pip3 install "eventlet<0.30"
+RUN pip3 install ryu
+
+# Create workspace directory
+WORKDIR /lab
+
+# Run a bash shell by default, start OpenvSwitch
+CMD service openvswitch-switch start && /bin/bash

@@ -9,7 +9,7 @@ Welcome to the hands-on lab repository for the **ASDN (Advanced and Software Def
 | Module | Topic | Description |
 |--------|-------|-------------|
 | [Module 1](MODULE_1_VIRTUALIZATION/) | **Virtualization** | Docker fundamentals, container networking, routing, firewalling |
-| Module 2 | **SDN** | Software Defined Networking, controllers, Mininet, Kathará *(coming soon)* |
+| [Module 2](MODULE_2_SDN/) | **SDN** | Software Defined Networking, controllers, Mininet, Kathará |
 | Module 3 | **O-RAN** | Open Radio Access Network *(coming soon)* |
 
 ## 🛠️ Prerequisites

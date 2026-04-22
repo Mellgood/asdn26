@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  mininet:
+    build:
+      context: ../docker
+      dockerfile: Dockerfile.sdn
+    container_name: asdn_mininet_lab02
+    privileged: true
+    volumes:
+      - .:/lab
+      - /lib/modules:/lib/modules:ro
+    network_mode: "host"
+    stdin_open: true
+    tty: true

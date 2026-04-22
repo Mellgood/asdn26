@@ -1,0 +1,12 @@
+# Router 1 Boot Script
+
+# Assign IPv4 Addresses
+# Example provided for establishing an IP on an interface:
+ip addr add 10.0.0.1/24 dev eth0
+
+# TODO: Target interface eth1 with 10.0.1.1/24
+# ...
+
+# Static Routes
+# Example provided for statically overriding kernel routing decisions:
+ip route add 10.0.2.0/24 via 10.0.1.2
