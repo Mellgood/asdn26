@@ -2,7 +2,7 @@
 
 from mininet.topo import Topo
 from mininet.net import Mininet
-from mininet.node import OVSController
+from mininet.node import OVSBridge
 from mininet.link import TCLink
 from mininet.cli import CLI
 from mininet.log import setLogLevel
@@ -10,24 +10,26 @@ from mininet.log import setLogLevel
 class CustomTopo(Topo):
     def build(self):
         # 1. Add switches
-        # Example provided for s1:
         s1 = self.addSwitch('s1')
-        # TODO: Add s2, s3
-        
+        s2 = self.addSwitch('s2')
+        s3 = self.addSwitch('s3')
 
         # 2. Add hosts
-        # Example provided for h1:
         h1 = self.addHost('h1')
-        # TODO: Add h2, h3, h4
-        
+        h2 = self.addHost('h2')
+        h3 = self.addHost('h3')
+        h4 = self.addHost('h4')
 
         # 3. Add links
-        # Example provided for s1 to s2 with 10 Mbps bandwidth limitation:
+        # Connect core to edge switches with bw=10
         self.addLink(s1, s2, bw=10)
-        # TODO: Connect s3 to s1 (with bw=10)
-        # TODO: Connect h1, h2 to s2
-        # TODO: Connect h3, h4 to s3
-        pass
+        self.addLink(s1, s3, bw=10)
+        
+        # Connect hosts to edge switches (unconstrained)
+        self.addLink(h1, s2)
+        self.addLink(h2, s2)
+        self.addLink(h3, s3)
+        self.addLink(h4, s3)
 
 if __name__ == '__main__':
     # Set the log level to print useful info
@@ -36,16 +38,14 @@ if __name__ == '__main__':
     # Instantiate the topology
     topo = CustomTopo()
     
-    # TODO: Initialize Mininet with the CustomTopo, OVSController and TCLink
-    # Example provided:
-    net = Mininet(topo=topo, controller=OVSController, link=TCLink)
+    # Initialize Mininet with the CustomTopo, OVSBridge and TCLink
+    net = Mininet(topo=topo, switch=OVSBridge, controller=None, link=TCLink)
     
-    # TODO: Start the network
-    # Example provided:
+    # Start the network
     net.start()
     
-    # TODO: Start the CLI
-    # ...
+    # Start the CLI
+    CLI(net)
     
-    # TODO: Stop the network after CLI exits
-    # ...
+    # Stop the network after CLI exits
+    net.stop()
