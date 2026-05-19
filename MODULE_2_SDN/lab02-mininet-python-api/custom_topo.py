@@ -2,7 +2,7 @@
 
 from mininet.topo import Topo
 from mininet.net import Mininet
-from mininet.node import OVSController
+from mininet.node import OVSBridge
 from mininet.link import TCLink
 from mininet.cli import CLI
 from mininet.log import setLogLevel
@@ -36,9 +36,9 @@ if __name__ == '__main__':
     # Instantiate the topology
     topo = CustomTopo()
     
-    # TODO: Initialize Mininet with the CustomTopo, OVSController and TCLink
+    # TODO: Initialize Mininet with the CustomTopo, OVSBridge and TCLink
     # Example provided:
-    net = Mininet(topo=topo, controller=OVSController, link=TCLink)
+    net = Mininet(topo=topo, switch=OVSBridge, controller=None, link=TCLink)
     
     # TODO: Start the network
     # Example provided:
