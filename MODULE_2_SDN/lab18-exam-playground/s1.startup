@@ -1,0 +1,14 @@
+# s1 — Core SDN Switch
+# Ports: eth0 → r1 (uplink), eth1 → h1, eth2 → s2 (trunk)
+
+/etc/init.d/openvswitch-switch start
+
+ovs-vsctl add-br s1
+
+ovs-vsctl add-port s1 eth0
+ovs-vsctl add-port s1 eth1
+ovs-vsctl add-port s1 eth2
+
+# Connect to the Ryu controller running on the host
+# Replace <CONTROLLER_IP> with your host machine's IP address
+ovs-vsctl set-controller s1 tcp:<CONTROLLER_IP>:6653
