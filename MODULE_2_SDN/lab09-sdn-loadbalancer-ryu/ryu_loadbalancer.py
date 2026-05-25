@@ -24,8 +24,13 @@ class RyuLoadBalancer(app_manager.RyuApp):
         pkt = packet.Packet(msg.data)
         ip_pkt = pkt.get_protocol(ipv4.ipv4)
         
-        if not ip_pkt: 
-            return # Only Load balance IPv4 for simplicity
+        if not ip_pkt:
+            # Flood ARP and other non-IPv4 packets so hosts can discover each other
+            actions = [parser.OFPActionOutput(ofproto.OFPP_FLOOD)]
+            out = parser.OFPPacketOut(datapath=datapath, buffer_id=msg.buffer_id,
+                                      in_port=in_port, actions=actions, data=msg.data)
+            datapath.send_msg(out)
+            return
             
         src_ip = ip_pkt.src
         dst_ip = ip_pkt.dst

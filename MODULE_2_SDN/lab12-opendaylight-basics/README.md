@@ -27,7 +27,7 @@ Start the environment:
 ```bash
 docker compose up -d
 ```
-*[!] Note: ODL is a massive Java application. It might take 1-2 full minutes to boot, especially on the first run.*
+*[!] Note: On first run, Docker will build the ODL image locally (this downloads ~200 MB). ODL is a massive Java application — it might take 1-2 full minutes to boot even after the build completes.*
 
 ## Tasks
 

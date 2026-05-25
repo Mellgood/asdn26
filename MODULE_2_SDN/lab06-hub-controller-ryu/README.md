@@ -39,7 +39,7 @@ docker exec -it asdn_mininet_lab06 /bin/bash
 ### Task 2: Launch and Verify
 1. Open **Terminal 2** inside the container:
    ```bash
-   ryu-manager ryu_hub.py
+   ryu-manager /lab/ryu_hub.py
    ```
 2. In **Terminal 1**, run Mininet, explicitly telling it to connect to your remote custom controller:
    ```bash
