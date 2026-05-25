@@ -1,0 +1,9 @@
+/etc/init.d/openvswitch-switch start
+
+ovs-vsctl add-br s3
+
+ovs-vsctl add-port s3 eth0
+ovs-vsctl add-port s3 eth1
+
+# Note: Replace <CONTROLLER_IP> with your host machine's IP address
+ovs-vsctl set-controller s3 tcp:<CONTROLLER_IP>:6653

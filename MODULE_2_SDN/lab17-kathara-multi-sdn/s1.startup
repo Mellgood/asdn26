@@ -1,0 +1,13 @@
+# Start the OpenVSwitch daemon
+/etc/init.d/openvswitch-switch start
+
+# Create OVS bridge named after this node
+ovs-vsctl add-br s1
+
+# Add interfaces to the bridge
+ovs-vsctl add-port s1 eth0
+ovs-vsctl add-port s1 eth1
+
+# Connect to the remote Ryu controller running on the host
+# Replace <CONTROLLER_IP> with your host machine's IP address
+ovs-vsctl set-controller s1 tcp:<CONTROLLER_IP>:6653
