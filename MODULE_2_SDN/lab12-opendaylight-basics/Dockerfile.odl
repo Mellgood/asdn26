@@ -1,0 +1,26 @@
+FROM eclipse-temurin:11-jre
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Download OpenDaylight Aluminium SR4 (0.14.4) — last release with legacy RESTCONF support
+# This version supports /restconf/operational/ URL format used in the lab
+ENV ODL_VERSION=0.14.4
+ENV ODL_DIST=opendaylight-${ODL_VERSION}
+
+RUN apt-get update && apt-get install -y \
+    wget \
+    unzip \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /opt
+
+RUN wget -q "https://nexus.opendaylight.org/content/repositories/opendaylight.release/org/opendaylight/integration/karaf/${ODL_VERSION}/karaf-${ODL_VERSION}.zip" \
+    && unzip -q karaf-${ODL_VERSION}.zip \
+    && rm karaf-${ODL_VERSION}.zip \
+    && mv karaf-${ODL_VERSION} opendaylight
+
+# Expose ports: RESTCONF, OpenFlow, Karaf SSH
+EXPOSE 8181 6653 8101
+
+# Start ODL Karaf and keep the container alive
+CMD ["/opt/opendaylight/bin/karaf", "server"]

@@ -23,6 +23,9 @@ graph TD
 2. Complete the `TODO` to attach the hosts.
 3. Open `s1.startup`. We provided the Open vSwitch shell syntax (`ovs-vsctl`) to manually configure `s1` to dial out to an external remote controller spanning your host OS network.
 4. Replace `<CONTROLLER_IP>` inside `.startup` with your actual machine's local IP (or the docker network bridge IP if you are running Ryu in a container from Lab 06).
-5. On your **Host/Desktop terminal**, start Ryu using the Hub script we made back in Lab 06!
+5. On your **Host/Desktop terminal**, start Ryu using the Hub script from Lab 06:
+   ```bash
+   ryu-manager ../lab06-hub-controller-ryu/ryu_hub.py
+   ```
 6. Run `kathara lstart`. The switch `s1` will spawn and immediately dial out to Ryu!
-7. Try pinging. The OpenFlow logic dictates Kathará's forwarding now!
+7. From `pc1`'s terminal, try: `ping 10.0.1.1`. The OpenFlow logic dictates Kathará's forwarding now!

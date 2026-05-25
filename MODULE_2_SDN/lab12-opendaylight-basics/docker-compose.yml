@@ -2,7 +2,9 @@ version: '3.8'
 
 services:
   opendaylight:
-    image: opendaylight/odl:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.odl
     container_name: asdn_odl_lab12
     ports:
       - "8181:8181"   # RESTCONF API

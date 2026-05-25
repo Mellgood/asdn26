@@ -62,4 +62,4 @@ Open the `custom_topo.py` file provided in this folder. It contains a boilerplat
    ```
    You should see the throughput capping precisely at ~10.0 Mbits/sec.
 
-*If you run into issues, check the `solutions/` folder for the completed script.*
+*If you run into issues, switch to the `solutions` branch for the completed script (`git switch solutions`).*
