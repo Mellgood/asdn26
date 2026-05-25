@@ -100,3 +100,6 @@ The module is thoughtfully divided into logical sections. Please work through th
 * [Lab 15: eBGP Peering (Exterior Gateway Protocol)](lab15-kathara-bgp-peering/)
 * [Lab 16: SDN Integration in Kathará](lab16-kathara-sdn-integration/)
 * [Lab 17: Multi-Switch SDN Fabric](lab17-kathara-multi-sdn/)
+
+### Section 5: Exam Preparation
+* [Lab 18: Exam Playground — Enterprise SDN Network](lab18-exam-playground/)
