@@ -104,8 +104,39 @@ kathara lstart
 ```
 This starts **all nodes** at once: the controller, both switches, the router, and all hosts. The controller runs `ryu-manager` automatically via its startup script. No manual IP configuration needed — the management network uses hardcoded IPs.
 
-### Step 3: Verify Connectivity
-Wait ~5 seconds for all switches to connect to the controller, then:
+### Step 3: Inspect the Flow Tables (before any traffic)
+Wait ~5 seconds for all switches to connect to the controller, then examine the flow tables **before sending any traffic**.
+
+#### OVS Port Mapping
+
+Ports are numbered in the order they are added with `ovs-vsctl add-port` (starting from 1):
+
+| Switch | Port 1 (eth0) | Port 2 (eth1) | Port 3 (eth2) |
+|--------|--------------|--------------|--------------|
+| **s1** | → r1 (uplink) | → h1 | → s2 (trunk) |
+| **s2** | → s1 (trunk) | → h2 (web) | → h3 (db) |
+
+Each switch should have **only the table-miss rule** — the default rule installed by the controller when a switch connects. This rule tells the switch: "for any packet you don't have a rule for, send it to the controller."
+
+📦 **s1's Kathara terminal**:
+```bash
+ovs-ofctl dump-flows s1
+```
+```
+ cookie=0x0, duration=XXs, table=0, n_packets=0, n_bytes=0, priority=0 actions=CONTROLLER:65535
+```
+
+📦 **s2's Kathara terminal**:
+```bash
+ovs-ofctl dump-flows s2
+```
+```
+ cookie=0x0, duration=XXs, table=0, n_packets=0, n_bytes=0, priority=0 actions=CONTROLLER:65535
+```
+
+> `priority=0` means lowest priority (matches only if no other rule matches). `CONTROLLER:65535` sends the full packet to the controller via a `PACKET_IN` message.
+
+### Step 4: Verify Connectivity
 
 📦 **h1's Kathara terminal** (internal → internal):
 ```bash
@@ -135,45 +166,7 @@ All pings and the curl should succeed. If they don't, check the controller is ru
 ps aux | grep ryu
 ```
 
-### Step 4: Explore
-
-#### OVS Port Mapping
-
-Ports are numbered in the order they are added with `ovs-vsctl add-port` (starting from 1):
-
-| Switch | Port 1 (eth0) | Port 2 (eth1) | Port 3 (eth2) |
-|--------|--------------|--------------|--------------|
-| **s1** | → r1 (uplink) | → h1 | → s2 (trunk) |
-| **s2** | → s1 (trunk) | → h2 (web) | → h3 (db) |
-
-#### Right after boot (before any ping)
-
-Each switch should have **only the table-miss rule** — the default rule installed by the controller when a switch connects. This rule tells the switch: "for any packet you don't have a rule for, send it to the controller."
-
-📦 **s1's Kathara terminal**:
-```bash
-ovs-ofctl dump-flows s1
-```
-```
- cookie=0x0, duration=XXs, table=0, n_packets=0, n_bytes=0, priority=0 actions=CONTROLLER:65535
-```
-
-📦 **s2's Kathara terminal**:
-```bash
-ovs-ofctl dump-flows s2
-```
-```
- cookie=0x0, duration=XXs, table=0, n_packets=0, n_bytes=0, priority=0 actions=CONTROLLER:65535
-```
-
-> `priority=0` means lowest priority (matches only if no other rule matches). `CONTROLLER:65535` sends the full packet to the controller via a `PACKET_IN` message.
-
-#### After `h1 ping h2`
-
-📦 **h1's Kathara terminal**:
-```bash
-ping -c 1 10.0.0.20
-```
+### Step 5: Inspect the Flow Tables (after traffic)
 
 Now check the flow tables again. The controller has learned MAC addresses and installed forwarding rules:
 
