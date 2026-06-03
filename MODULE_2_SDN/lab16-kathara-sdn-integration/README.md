@@ -5,27 +5,38 @@ Until now, we used **Mininet** strictly for OpenFlow, and **Kathará** strictly 
 Kathará natively provides a specialized docker image called `kathara/sdn` which packages `Open vSwitch` perfectly.
 
 ## Topology
-A core OpenFlow switch (`s1`) connected to two normal hosts (`pc1`, `pc2`), orchestrated natively by Kathará but controlled by your very own Ryu script.
+A core OpenFlow switch (`s1`) connected to two normal hosts (`pc1`, `pc2`), with a dedicated Ryu controller node on a management network.
 ```mermaid
 graph TD
-    c1{{Ryu Controller on Host}}
+    subgraph MGMT["Management Network (172.16.0.0/24)"]
+        ctrl{{"controller: 172.16.0.1<br/>[Ryu Hub Controller]"}}
+    end
     s1((s1: SDN Switch))
     pc1[pc1]
     pc2[pc2]
 
-    c1 -.->|TCP 6653| s1
-    s1 --- pc1
-    s1 --- pc2
+    ctrl -.-|"MGMT"| s1
+    s1 ---|"A"| pc1
+    s1 ---|"B"| pc2
+```
+
+## Setup (one-time)
+Build the controller image (only needed once, shared across all labs):
+
+🖥️ **Host terminal**:
+```bash
+docker build -t asdn/sdn -f ../docker/Dockerfile.sdn ../docker/
 ```
 
 ## Tasks
-1. Open `lab.conf`. We provided the unique syntax occurrence indicating how to artificially override the default Kathará Linux image for a specific node using `s1[image]="kathara/sdn"`.
+1. Open `lab.conf`. We provided the controller node (pre-configured) and the unique syntax for overriding the default Kathará Linux image: `s1[image]="kathara/sdn"`.
 2. Complete the `TODO` to attach the hosts.
-3. Open `s1.startup`. We provided the Open vSwitch shell syntax (`ovs-vsctl`) to manually configure `s1` to dial out to an external remote controller spanning your host OS network.
-4. Replace `<CONTROLLER_IP>` inside `.startup` with your actual machine's local IP (or the docker network bridge IP if you are running Ryu in a container from Lab 06).
-5. On your **Host/Desktop terminal**, start Ryu using the Hub script from Lab 06:
+3. Open `s1.startup`. We provided the Open vSwitch shell syntax (`ovs-vsctl`) to manually configure `s1`. The management interface (`eth2`) and controller connection are pre-configured — you just need to create the OVS bridge and add the data ports.
+4. Start the lab:
+
+   🖥️ **Host terminal** (from this lab's directory):
    ```bash
-   ryu-manager ../lab06-hub-controller-ryu/ryu_hub.py
+   kathara lstart
    ```
-6. Run `kathara lstart`. The switch `s1` will spawn and immediately dial out to Ryu!
-7. From `pc1`'s terminal, try: `ping 10.0.1.1`. The OpenFlow logic dictates Kathará's forwarding now!
+   The controller starts `ryu-manager` automatically. The switch `s1` will connect to it via the management network.
+5. From `pc1`'s terminal, try: `ping 10.0.1.1`. The OpenFlow logic dictates Kathará's forwarding now!

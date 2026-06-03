@@ -1,3 +1,9 @@
+"""
+Ryu Learning Switch Controller — Completed version for Lab 17's controller node.
+Based on Lab 07's ryu_learning_switch.py with TODOs filled in.
+
+This controller learns MAC addresses and installs flow rules for known destinations.
+"""
 from ryu.base import app_manager
 from ryu.controller import ofp_event
 from ryu.controller.handler import MAIN_DISPATCHER
@@ -11,7 +17,6 @@ class RyuLearningSwitch(app_manager.RyuApp):
 
     def __init__(self, *args, **kwargs):
         super(RyuLearningSwitch, self).__init__(*args, **kwargs)
-        # mac_to_port[dpid][mac_address] = port
         self.mac_to_port = {}
 
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
@@ -30,47 +35,45 @@ class RyuLearningSwitch(app_manager.RyuApp):
 
         dst = eth.dst
         src = eth.src
-        
-        # Ignores IPv6 multicast for clean console logs
-        if eth.ethertype == 34525: 
+
+        if eth.ethertype == 34525:
             return
 
         self.logger.info("packet in %s: %s -> %s (port %s)", dpid, src, dst, in_port)
 
-        # 1. Map the Source MAC to the Port it arrived from
-        # TODO: Store the src MAC mapping to the in_port in self.mac_to_port[dpid]
-        
+        # 1. Learn: map source MAC to port
+        self.mac_to_port[dpid][src] = in_port
 
-        # 2. Decide the Output Port
-        out_port = ofproto.OFPP_FLOOD
-        # TODO: Check if dst MAC is already inside self.mac_to_port[dpid]
-        # If it is, update the out_port variable to that specific port instead of FLOOD!
-        
+        # 2. Decide: unicast if known, otherwise flood
+        if dst in self.mac_to_port[dpid]:
+            out_port = self.mac_to_port[dpid][dst]
+        else:
+            out_port = ofproto.OFPP_FLOOD
 
         actions = [parser.OFPActionOutput(out_port)]
 
-        # 3. Inject a FLOW_MOD rule if we confidently know the destination
+        # 3. Install flow rule for known destinations
         if out_port != ofproto.OFPP_FLOOD:
-            # Example provided for constructing a Match
             match = parser.OFPMatch(in_port=in_port, eth_dst=dst, eth_src=src)
-            
-            # Example provided for constructing the FlowMod to be pushed into the hardware
             inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS, actions)]
             mod = parser.OFPFlowMod(
-                datapath=datapath, 
-                priority=1, 
-                match=match, 
+                datapath=datapath,
+                priority=1,
+                match=match,
                 instructions=inst
             )
-            # TODO: Send the FlowMod into the switch! (Recall Lab 06: datapath.send_msg)
-            
+            datapath.send_msg(mod)
 
+        # 4. Forward the current packet
         data = None
         if msg.buffer_id == ofproto.OFP_NO_BUFFER:
             data = msg.data
 
-        # 4. Forward the current packet out immediately
-        # TODO: create the 'out' variable using parser.OFPPacketOut (Recall Lab 06)
-        out = None
-        
-        # TODO: send the 'out' message to the switch
+        out = parser.OFPPacketOut(
+            datapath=datapath,
+            buffer_id=msg.buffer_id,
+            in_port=in_port,
+            actions=actions,
+            data=data
+        )
+        datapath.send_msg(out)

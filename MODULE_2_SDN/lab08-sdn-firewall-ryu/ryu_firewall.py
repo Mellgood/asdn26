@@ -45,7 +45,8 @@ class RyuFirewall(app_manager.RyuApp):
                 
                 # 3. FlowMod: Use a high priority (e.g. 100)
                 # TODO: Construct a FlowMod using parser.OFPFlowMod (Recall Lab 07)
-                # Pass priority=100 so it overrides normal forwarding rules!
+                # Wrap actions in instructions: inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS, actions)]
+                # Pass priority=100 and instructions=inst so it overrides normal forwarding rules!
                 
                 
                 # TODO: Push the mod to the switch

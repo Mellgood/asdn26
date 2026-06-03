@@ -1,0 +1,6 @@
+# controller — Ryu SDN Controller (Hub mode from Lab 06)
+# Management interface on the MGMT collision domain
+ip addr add 172.16.0.1/24 dev eth0
+
+# Start Ryu with the Hub controller
+ryu-manager --ofp-tcp-listen-port 6653 /ryu_hub.py &
