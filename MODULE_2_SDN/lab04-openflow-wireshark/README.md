@@ -25,7 +25,7 @@ We will use `tshark` (the command-line version of Wireshark) inside the containe
    ```bash
    docker exec -it asdn_mininet_lab04 /bin/bash
    ```
-2. Start Mininet with the default topology. Mininet automatically spins up a default reference controller on localhost.
+2. Start Mininet with the default topology. The container has a test controller pre-started on port 6653.
    ```bash
    mn --controller=remote
    ```
@@ -45,12 +45,36 @@ You now have a `.pcap` file located at `MODULE_2_SDN/lab04-openflow-wireshark/op
    tshark -r /lab/openflow_capture.pcap -V -Y "openflow_v1 or openflow_v4" | less
    ```
 
-2. Scrutinize the packets. Try to locate and inspect the fields of the following core OpenFlow messages:
-   - **HELLO**: The initial handshake between the switch and the controller. What version of OpenFlow was negotiated?
-   - **FEATURES_REQUEST / FEATURES_REPLY**: The controller asking the switch for its hardware capabilities (e.g., Datapath ID, port list).
-   - **PACKET_IN**: Investigate this payload. When `h1` pinged `h2`, the switch didn't know the MAC address. It encapsulated the ARP/ICMP packet inside an OpenFlow `PACKET_IN` msg and sent it to the controller.
-   - **PACKET_OUT**: The controller instructing the switch to broadcast the ARP out of specific ports.
-   - **FLOW_MOD**: The crucial message. The controller instructs the switch to install a persistent rule in its flow table so subsequent ping packets are forwarded natively in hardware without bothering the controller.
+2. Scrutinize the packets. The controller in this lab is `ovs-testcontroller`, which operates in a **proactive** fashion: it installs forwarding rules at connection time, before any user traffic is generated. This is different from a *reactive* controller (like the one we will write in Lab 07), which waits for packets to arrive before deciding what to do.
+
+   Locate and inspect the following core OpenFlow messages in the capture. They appear roughly in this order:
+
+   #### Phase 1: Connection Setup
+   - **HELLO**: The very first OpenFlow message. Both the switch and the controller exchange `HELLO` to negotiate the protocol version. What version of OpenFlow was negotiated?
+   - **FEATURES_REQUEST / FEATURES_REPLY**: The controller asks the switch: *"What can you do? How many ports do you have? What is your Datapath ID?"*. Inspect the `FEATURES_REPLY` — the Datapath ID (DPID) is the switch's unique hardware fingerprint.
+   - **SET_CONFIG**: The controller configures how much of each packet should be sent in `PACKET_IN` messages (the `miss_send_len` field).
+   - **PORT_STATUS**: The switch informs the controller about the state of its physical ports.
+
+   #### Phase 2: Proactive Rule Installation
+   - **FLOW_MOD**: This is the crucial message. The `ovs-testcontroller` installs a rule with `action=NORMAL` immediately upon connection. This tells the switch: *"Handle all traffic using your built-in L2 learning logic — no need to ask me."*
+     
+     > **Key insight:** Because this rule is installed *before* any ping, the switch will forward the ICMP traffic autonomously. You will **not** see `PACKET_IN`/`PACKET_OUT` messages for the ping traffic itself. The controller has delegated all forwarding decisions to the switch hardware.
+
+   #### Phase 3: Data Plane Traffic (the ping)
+   - **PACKET_IN / PACKET_OUT**: You may still see some of these messages in the capture for ARP or initial broadcast traffic that the switch escalates to the controller. Note that these might appear as `(Malformed Packet)` in Wireshark if the OpenFlow version negotiated doesn't match Wireshark's default dissector.
+
+   #### Proactive vs Reactive: A Preview
+   | | Proactive (this lab) | Reactive (Lab 07+) |
+   |---|---|---|
+   | **When are rules installed?** | At connection time | After each unknown packet |
+   | **PACKET_IN frequency** | Rare (only edge cases) | Every unknown flow |
+   | **Controller load** | Low | High (initially) |
+   | **Forwarding latency** | Instant | First packet is slow |
+
+   In Labs 06–09, you will write your own **reactive** controllers in Python (Ryu). There, you will see the full `PACKET_IN → PACKET_OUT → FLOW_MOD` cycle for every new flow.
 
 ## Expected Outcome
-Understanding the anatomy of these messages is a mandatory prerequisite before writing your own controller logic in Python. Pay special attention to how a `FLOW_MOD` matches certain criteria and pushes actions.
+Understanding the anatomy of these messages is a mandatory prerequisite before writing your own controller logic in Python. Pay special attention to:
+- How `HELLO` negotiates the OpenFlow version
+- How `FEATURES_REPLY` exposes the switch's identity and capabilities
+- How `FLOW_MOD` matches certain criteria and pushes actions — even when installed proactively
