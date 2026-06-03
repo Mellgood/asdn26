@@ -9,6 +9,9 @@ ovs-vsctl add-port s1 eth0
 ovs-vsctl add-port s1 eth1
 ovs-vsctl add-port s1 eth2
 
-# Connect to the Ryu controller running on the host
-# Replace <CONTROLLER_IP> with your host machine's IP address
+# Connect to the Ryu controller running in the Docker container.
+# The controller is exposed on the host's port 6653 via docker-compose.
+# Replace <CONTROLLER_IP> with your host machine's IP address.
+# On macOS: ipconfig getifaddr en0
+# On Linux:  ip route get 1 | awk '{print $7}'
 ovs-vsctl set-controller s1 tcp:<CONTROLLER_IP>:6653

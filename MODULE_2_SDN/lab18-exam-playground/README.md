@@ -79,18 +79,32 @@ graph TD
 ## Setup
 
 ### Step 1: Start the Controller
-On your **host terminal**, start the Ryu Learning Switch controller provided with this lab:
+Since `ryu-manager` is not available on macOS, we run the Ryu controller inside a Docker container. From this lab's directory:
 ```bash
-ryu-manager controller/ryu_campus.py
+docker compose up --build
+```
+This builds the image (if needed) and starts the Ryu Learning Switch controller on port **6653**.
+
+### Step 2: Configure the Controller IP
+Before starting the Kathará network, you need to set the controller IP in the switch startup files.
+
+Find your host IP:
+```bash
+# macOS:
+ipconfig getifaddr en0
+# Linux:
+ip route get 1 | awk '{print $7}'
 ```
 
-### Step 2: Start the Network
+Then replace `<CONTROLLER_IP>` in both `s1.startup` and `s2.startup` with your actual IP address.
+
+### Step 3: Start the Network
 In another host terminal, from this lab's directory:
 ```bash
 kathara lstart
 ```
 
-### Step 3: Verify Connectivity
+### Step 4: Verify Connectivity
 Wait ~5 seconds for all switches to connect to the controller, then:
 
 From **h1** (internal → internal):
@@ -114,9 +128,9 @@ From **ext1**, access the web server:
 curl http://10.0.0.20:8080
 ```
 
-All pings and the curl should succeed. If they don't, check the controller logs.
+All pings and the curl should succeed. If they don't, check the controller logs with `docker compose logs -f`.
 
-### Step 4: Explore
+### Step 5: Explore
 Examine the flow tables on each switch:
 ```bash
 # From s1's terminal:
@@ -164,7 +178,7 @@ Run `h1 ping h3`, then inspect `ovs-ofctl dump-flows s1` and `ovs-ofctl dump-flo
 <details>
 <summary><b>Challenge 1.3:</b> What happens if you restart the controller?</summary>
 
-Stop the Ryu controller (Ctrl+C) and start it again. Are the old flow rules still on the switches? Try pinging. What do you observe?
+Stop the Ryu controller (`docker compose down`) and start it again (`docker compose up`). Are the old flow rules still on the switches? Try pinging. What do you observe?
 </details>
 
 <details>
@@ -304,4 +318,5 @@ Enhance `ryu_campus.py` to track and periodically display (every 10 seconds) per
 ## Cleanup
 ```bash
 kathara lclean
+docker compose down
 ```
