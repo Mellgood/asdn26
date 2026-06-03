@@ -1,0 +1,6 @@
+# controller — Ryu SDN Controller (Learning Switch from Lab 07)
+# Management interface on the MGMT collision domain
+ip addr add 172.16.0.1/24 dev eth0
+
+# Start Ryu with the Learning Switch controller
+ryu-manager --ofp-tcp-listen-port 6653 /ryu_learning_switch.py &

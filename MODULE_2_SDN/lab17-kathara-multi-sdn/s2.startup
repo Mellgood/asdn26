@@ -4,8 +4,12 @@
 # TODO: Create an OVS bridge named "s2"
 # ...
 
-# TODO: Add eth0 and eth1 to the bridge
+# TODO: Add eth0 and eth1 to the bridge (data ports only — do NOT add eth2)
 # ...
 
-# TODO: Connect to the remote Ryu controller (same IP and port as s1)
-# ...
+# Management interface — gives s2 IP connectivity to the controller
+# This interface is NOT part of the OVS bridge (it's for control-plane only)
+ip addr add 172.16.0.20/24 dev eth2
+
+# Connect to the Ryu controller on the management network
+ovs-vsctl set-controller s2 tcp:172.16.0.1:6653

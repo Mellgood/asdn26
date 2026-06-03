@@ -9,6 +9,9 @@
 # TODO: Add both of the physical Kathará interfaces 'eth0' and 'eth1' to the 's1' switch
 # ...
 
-# Example provided to point the switch externally towards your Ryu controller!
-# TODO: Replace <CONTROLLER_IP> with the IP address where Ryu is running
-ovs-vsctl set-controller s1 tcp:<CONTROLLER_IP>:6653
+# Management interface — gives s1 IP connectivity to the controller
+# This interface is NOT part of the OVS bridge (it's for control-plane only)
+ip addr add 172.16.0.10/24 dev eth2
+
+# Connect to the Ryu controller on the management network
+ovs-vsctl set-controller s1 tcp:172.16.0.1:6653
