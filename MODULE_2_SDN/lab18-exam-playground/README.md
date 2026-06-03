@@ -79,7 +79,9 @@ graph TD
 ## Setup
 
 ### Step 1: Start the Controller
-Since `ryu-manager` is not available on macOS, we run the Ryu controller inside a Docker container. From this lab's directory:
+Since `ryu-manager` is not available on macOS, we run the Ryu controller inside a Docker container.
+
+🖥️ **Host terminal** (from this lab's directory):
 ```bash
 docker compose up --build
 ```
@@ -99,7 +101,8 @@ ip route get 1 | awk '{print $7}'
 Then replace `<CONTROLLER_IP>` in both `s1.startup` and `s2.startup` with your actual IP address.
 
 ### Step 3: Start the Network
-In another host terminal, from this lab's directory:
+
+🖥️ **Host terminal** (another tab, from this lab's directory):
 ```bash
 kathara lstart
 ```
@@ -107,36 +110,44 @@ kathara lstart
 ### Step 4: Verify Connectivity
 Wait ~5 seconds for all switches to connect to the controller, then:
 
-From **h1** (internal → internal):
+📦 **h1's Kathara terminal** (internal → internal):
 ```bash
 ping 10.0.0.20    # → h2 (web server)
 ping 10.0.0.30    # → h3 (db server)
 ```
 
-From **h1** (internal → external):
+📦 **h1's Kathara terminal** (internal → external):
 ```bash
 ping 192.168.1.100  # → ext1
 ```
 
-From **ext1** (external → internal):
+📦 **ext1's Kathara terminal** (external → internal):
 ```bash
 ping 10.0.0.20    # → h2 (web server)
 ```
 
-From **ext1**, access the web server:
+📦 **ext1's Kathara terminal** — access the web server:
 ```bash
 curl http://10.0.0.20:8080
 ```
 
-All pings and the curl should succeed. If they don't, check the controller logs with `docker compose logs -f`.
+All pings and the curl should succeed. If they don't, check the controller logs:
+
+🖥️ **Host terminal**:
+```bash
+docker compose logs -f
+```
 
 ### Step 5: Explore
 Examine the flow tables on each switch:
-```bash
-# From s1's terminal:
-ovs-ofctl dump-flows s1
 
-# From s2's terminal:
+📦 **s1's Kathara terminal**:
+```bash
+ovs-ofctl dump-flows s1
+```
+
+📦 **s2's Kathara terminal**:
+```bash
 ovs-ofctl dump-flows s2
 ```
 
@@ -161,6 +172,8 @@ Before the exam, make sure you understand:
 ## Practice Challenges
 
 Use these to prepare. They simulate the style and difficulty of real exam questions.
+
+> **Terminal convention**: Commands like `ovs-ofctl dump-flows s1` run inside **📦 s1's Kathara terminal**. Commands like `ping` on h1 run inside **📦 h1's Kathara terminal**. Commands like `docker compose` or `kathara` run on the **🖥️ Host terminal**.
 
 ### 🟢 Level 1: Observation & Analysis
 <details>
