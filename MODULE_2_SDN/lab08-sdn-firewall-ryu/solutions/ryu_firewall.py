@@ -35,7 +35,8 @@ class RyuFirewall(app_manager.RyuApp):
                 
                 actions = []
                 match = parser.OFPMatch(eth_type=0x0800, ipv4_src=self.BLOCKED_IP)
-                mod = parser.OFPFlowMod(datapath=datapath, priority=100, match=match, actions=actions)
+                inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS, actions)]
+                mod = parser.OFPFlowMod(datapath=datapath, priority=100, match=match, instructions=inst)
                 datapath.send_msg(mod)
                 return
 
@@ -53,7 +54,8 @@ class RyuFirewall(app_manager.RyuApp):
 
         if out_port != ofproto.OFPP_FLOOD:
             match = parser.OFPMatch(in_port=in_port, eth_dst=dst, eth_src=src)
-            mod = parser.OFPFlowMod(datapath=datapath, priority=1, match=match, actions=actions)
+            inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS, actions)]
+            mod = parser.OFPFlowMod(datapath=datapath, priority=1, match=match, instructions=inst)
             datapath.send_msg(mod)
 
         data = None

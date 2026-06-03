@@ -1,9 +1,12 @@
+# s2 — SDN Switch (Lab 17 Solution)
 /etc/init.d/openvswitch-switch start
 
 ovs-vsctl add-br s2
-
 ovs-vsctl add-port s2 eth0
 ovs-vsctl add-port s2 eth1
 
-# Note: Replace <CONTROLLER_IP> with your host machine's IP address
-ovs-vsctl set-controller s2 tcp:<CONTROLLER_IP>:6653
+# Management interface (pre-configured, NOT part of the OVS bridge)
+ip addr add 172.16.0.20/24 dev eth2
+
+# Connect to the Ryu controller on the management network
+ovs-vsctl set-controller s2 tcp:172.16.0.1:6653

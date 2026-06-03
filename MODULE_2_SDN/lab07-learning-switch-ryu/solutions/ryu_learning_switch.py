@@ -49,11 +49,12 @@ class RyuLearningSwitch(app_manager.RyuApp):
         # 3. Inject a FLOW_MOD rule if we eagerly know the destination
         if out_port != ofproto.OFPP_FLOOD:
             match = parser.OFPMatch(in_port=in_port, eth_dst=dst, eth_src=src)
+            inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS, actions)]
             mod = parser.OFPFlowMod(
                 datapath=datapath, 
                 priority=1, 
                 match=match, 
-                actions=actions
+                instructions=inst
             )
             datapath.send_msg(mod)
 
