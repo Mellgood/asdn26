@@ -27,7 +27,7 @@ We will use `tshark` (the command-line version of Wireshark) inside the containe
    ```
 2. Start Mininet with the default topology. Mininet automatically spins up a default reference controller on localhost.
    ```bash
-   mn
+   mn --controller=remote
    ```
 3. Once Mininet creates the network, wait a few seconds, then trigger an ICMP ping from `h1` to `h2`:
    ```bash
